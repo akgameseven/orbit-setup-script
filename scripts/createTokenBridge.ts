@@ -352,7 +352,7 @@ export const createERC20Bridge = async (
 
   const outputInfo = {
     chainInfo: {
-      minL2BaseFee: config.minL2BaseFee,
+      minL3BaseFee: config.minL3BaseFee,
       networkFeeReceiver: config.networkFeeReceiver,
       infrastructureFeeCollector: config.infrastructureFeeCollector,
       batchPoster: config.batchPoster,

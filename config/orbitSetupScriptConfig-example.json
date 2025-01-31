@@ -7,7 +7,7 @@
   "chainId": 0,
   "chainName": "",
   "parentChainId": 0,
-  "minL2BaseFee": 0,
+  "minL3BaseFee": 0,
   "parent-chain-node-url": "",
   "utils": "",
   "rollup": "",

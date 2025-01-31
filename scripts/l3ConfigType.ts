@@ -9,7 +9,7 @@ export interface L3Config {
   utils: string
   validatorWalletCreator: string
   deployedAtBlockNumber: number
-  minL2BaseFee: number
+  minL3BaseFee: number
   networkFeeReceiver: string
   infrastructureFeeCollector: string
   batchPoster: string

@@ -29,7 +29,7 @@ export async function l3Configuration(
   const config: L3Config = JSON.parse(configRaw)
 
   // Reading params for L3 Configuration
-  const minL2BaseFee = config.minL2BaseFee
+  const minL3BaseFee = config.minL3BaseFee
   const networkFeeReceiver = config.networkFeeReceiver
   const infrastructureFeeCollector = config.infrastructureFeeCollector
   const chainOwner = config.chainOwner
@@ -54,7 +54,7 @@ export async function l3Configuration(
 
   // Set the network base fee
   console.log('Setting the Minimum Base Fee for the Orbit chain')
-  const tx = await ArbOwner.setMinimumL2BaseFee(minL2BaseFee)
+  const tx = await ArbOwner.setMinimumL2BaseFee(minL3BaseFee)
 
   // Wait for the transaction to be mined
   const receipt = await tx.wait()
