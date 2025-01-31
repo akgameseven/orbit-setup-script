@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import * as fs from 'fs'
-import { L3Config } from './l4ConfigType'
+import { L4Config } from './l4ConfigType'
 
 async function refundWallets(targetAddress: string) {
   const L2_RPC_URL = process.env.L2_RPC_URL
@@ -15,7 +15,7 @@ async function refundWallets(targetAddress: string) {
     './config/orbitSetupScriptConfig.json',
     'utf-8'
   )
-  const config: L3Config = JSON.parse(configRaw)
+  const config: L4Config = JSON.parse(configRaw)
   const batchPoster = config.batchPoster
   const staker = config.staker
 

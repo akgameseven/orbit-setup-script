@@ -21,22 +21,22 @@ const erc20InboxInterface = new ethers.utils.Interface([
 
 async function main() {
   const privateKey = process.env.PRIVATE_KEY
-  const L2_RPC_URL = process.env.L2_RPC_URL
   const L3_RPC_URL = process.env.L3_RPC_URL
+  const L4_RPC_URL = process.env.L4_RPC_URL
   const amount = process.env.AMOUNT
 
-  if (!privateKey || !L2_RPC_URL || !L3_RPC_URL || !amount) {
+  if (!privateKey || !L3_RPC_URL || !L4_RPC_URL || !amount) {
     throw new Error('Required environment variable not found')
   }
 
-  const l2Provider = new ethers.providers.JsonRpcProvider(L2_RPC_URL)
   const l3Provider = new ethers.providers.JsonRpcProvider(L3_RPC_URL)
-  const l2Signer = new ethers.Wallet(privateKey).connect(l2Provider)
+  const l4Provider = new ethers.providers.JsonRpcProvider(L4_RPC_URL)
+  const l3Signer = new ethers.Wallet(privateKey).connect(l3Provider)
 
   const erc20Inbox = new ethers.Contract(
     ERC20InboxAddress,
     erc20InboxInterface,
-    l2Signer
+    l3Signer
   )
 
   const configRaw = fs.readFileSync(
@@ -45,7 +45,7 @@ async function main() {
   )
   const config = JSON.parse(configRaw)
   const nativeToken = config.nativeToken
-  const oldBalance = await l3Provider.getBalance(config.chainOwner)
+  const oldBalance = await l4Provider.getBalance(config.chainOwner)
   let tx
   if (nativeToken === ethers.constants.AddressZero) {
     const inboxAddress = config.inbox
@@ -56,7 +56,7 @@ async function main() {
     const contract = new ethers.Contract(
       inboxAddress,
       depositEthInterface,
-      l2Signer
+      l3Signer
     )
     // deposit 0.4 ETH
     const tx = await contract.depositEth({
@@ -67,7 +67,7 @@ async function main() {
     console.log('Transaction has been mined')
     console.log('0.4 ETHs are deposited to your account')
   } else {
-    const nativeTokenContract = ERC20__factory.connect(nativeToken, l2Provider)
+    const nativeTokenContract = ERC20__factory.connect(nativeToken, l3Provider)
     const decimals = await nativeTokenContract.decimals()
     if (decimals !== 18) {
       throw new Error('We currently only support 18 decimals token')
@@ -82,7 +82,7 @@ async function main() {
   }
 
   while (true) {
-    const newBalance = await l3Provider.getBalance(config.chainOwner)
+    const newBalance = await l4Provider.getBalance(config.chainOwner)
     if (newBalance.gt(oldBalance)) {
       console.log(
         `LFG! 🚀 Balance of your account on Orbit chain increased by ${amount} Ether.`

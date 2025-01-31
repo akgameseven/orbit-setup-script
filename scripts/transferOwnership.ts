@@ -4,7 +4,7 @@ import UpgradeExecutor from '@arbitrum/nitro-contracts/build/contracts/src/mocks
 
 import ArbOwner from '@arbitrum/nitro-contracts/build/contracts/src/precompiles/ArbOwner.sol/ArbOwner.json'
 import fs from 'fs'
-import { L3Config } from './l4ConfigType'
+import { L4Config } from './l4ConfigType'
 import { TOKEN_BRIDGE_CREATOR_Arb_Sepolia } from './createTokenBridge'
 import L1AtomicTokenBridgeCreator from '@arbitrum/token-bridge-contracts/build/contracts/contracts/tokenbridge/ethereum/L1AtomicTokenBridgeCreator.sol/L1AtomicTokenBridgeCreator.json'
 
@@ -19,10 +19,10 @@ const ARB_OWNER_ADDRESS = '0x0000000000000000000000000000000000000070'
 export async function transferOwner(
   privateKey: string,
   l2Provider: ethers.providers.JsonRpcProvider,
-  l3Provider: ethers.providers.JsonRpcProvider
+  l4Provider: ethers.providers.JsonRpcProvider
 ) {
-  //Generating l2 and l3 deployer signers from privatekey and providers
-  const l3Deployer = getSigner(l3Provider, privateKey)
+  //Generating l2 and l4 deployer signers from privatekey and providers
+  const l4Deployer = getSigner(l4Provider, privateKey)
   //fetching chain id of parent chain
   const l2ChainId = (await l2Provider.getNetwork()).chainId
 
@@ -40,7 +40,7 @@ export async function transferOwner(
     './config/orbitSetupScriptConfig.json',
     'utf-8'
   )
-  const config: L3Config = JSON.parse(configRaw)
+  const config: L4Config = JSON.parse(configRaw)
 
   const L1AtomicTokenBridgeCreator__factory = new ethers.Contract(
     TOKEN_BRIDGE_CREATOR,
@@ -50,7 +50,7 @@ export async function transferOwner(
   const l1TokenBridgeCreator =
     L1AtomicTokenBridgeCreator__factory.connect(l2Provider)
 
-  //fetching L3 upgrade executor address
+  //fetching L4 upgrade executor address
   const executorContractAddress = (
     await l1TokenBridgeCreator.inboxToL2Deployment(config.inbox)
   ).upgradeExecutor
@@ -59,9 +59,9 @@ export async function transferOwner(
   const ArbOwner__factory = new ethers.Contract(
     ARB_OWNER_ADDRESS,
     ArbOwner.abi,
-    l3Deployer
+    l4Deployer
   )
-  const ArbOwnerContract = ArbOwner__factory.connect(l3Deployer)
+  const ArbOwnerContract = ArbOwner__factory.connect(l4Deployer)
   console.log('Adding Upgrade Executor contract to the chain owners')
   const receipt1 = await (
     await ArbOwnerContract.addChainOwner(executorContractAddress)
@@ -74,14 +74,14 @@ export async function transferOwner(
   const executorContract__factory = new ethers.Contract(
     executorContractAddress,
     UpgradeExecutor.abi,
-    l3Deployer
+    l4Deployer
   )
-  const upgradeExecutor = executorContract__factory.connect(l3Deployer)
-  //Constructing call data for removing rollup owner from chain owners on L3
+  const upgradeExecutor = executorContract__factory.connect(l4Deployer)
+  //Constructing call data for removing rollup owner from chain owners on L4
   const arbOwnerInterface = new ethers.utils.Interface(ArbOwner.abi)
   const targetCallData = arbOwnerInterface.encodeFunctionData(
     'removeChainOwner',
-    [await l3Deployer.getAddress()]
+    [await l4Deployer.getAddress()]
   )
 
   console.log('Executing removeChainOwner through the UpgradeExecutor contract')

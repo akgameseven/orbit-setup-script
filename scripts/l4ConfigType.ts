@@ -1,4 +1,4 @@
-export interface L3Config {
+export interface L4Config {
   chainOwner: string
   rollup: string
   inbox: string
