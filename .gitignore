@@ -12,3 +12,5 @@ docker-compose/services/redis-data
 docker-compose/services/stats-db-data
 docker-compose/services/logs
 .DS_Store
+
+.idea
