@@ -1,35 +1,35 @@
 import { abi as ArbOwner__abi } from '@arbitrum/nitro-contracts/build/contracts/src/precompiles/ArbOwner.sol/ArbOwner.json'
 import { abi as ArbGasInfo__abi } from '@arbitrum/nitro-contracts/build/contracts/src/precompiles/ArbGasInfo.sol/ArbGasInfo.json'
 import { ethers } from 'ethers'
-import { L3Config } from './l3ConfigType'
+import { L4Config } from './l4ConfigType'
 import fs from 'fs'
 
-export async function l3Configuration(
+export async function l4Configuration(
   privateKey: string,
   L2_RPC_URL: string,
-  L3_RPC_URL: string
+  L4_RPC_URL: string
 ) {
-  if (!privateKey || !L2_RPC_URL || !L3_RPC_URL) {
+  if (!privateKey || !L2_RPC_URL || !L4_RPC_URL) {
     throw new Error('Required environment variable not found')
   }
 
   // Generating providers from RPCs
   const L2Provider = new ethers.providers.JsonRpcProvider(L2_RPC_URL)
-  const L3Provider = new ethers.providers.JsonRpcProvider(L3_RPC_URL)
+  const L4Provider = new ethers.providers.JsonRpcProvider(L4_RPC_URL)
 
   // Creating the wallet and signer
   const l2signer = new ethers.Wallet(privateKey).connect(L2Provider)
-  const l3signer = new ethers.Wallet(privateKey).connect(L3Provider)
+  const l3signer = new ethers.Wallet(privateKey).connect(L4Provider)
 
   // Read the JSON configuration
   const configRaw = fs.readFileSync(
     './config/orbitSetupScriptConfig.json',
     'utf-8'
   )
-  const config: L3Config = JSON.parse(configRaw)
+  const config: L4Config = JSON.parse(configRaw)
 
   // Reading params for L3 Configuration
-  const minL2BaseFee = config.minL2BaseFee
+  const minL3BaseFee = config.minL3BaseFee
   const networkFeeReceiver = config.networkFeeReceiver
   const infrastructureFeeCollector = config.infrastructureFeeCollector
   const chainOwner = config.chainOwner
@@ -54,7 +54,7 @@ export async function l3Configuration(
 
   // Set the network base fee
   console.log('Setting the Minimum Base Fee for the Orbit chain')
-  const tx = await ArbOwner.setMinimumL2BaseFee(minL2BaseFee)
+  const tx = await ArbOwner.setMinimumL2BaseFee(minL3BaseFee)
 
   // Wait for the transaction to be mined
   const receipt = await tx.wait()
@@ -103,7 +103,7 @@ export async function l3Configuration(
     )
   }
 
-  // Setting L1 basefee on L3
+  // Setting L2 basefee on L4
   const arbGasInfoAbi = ArbGasInfo__abi
   const arbGasInfoAddress = '0x000000000000000000000000000000000000006c'
   const ArbOGasInfo = new ethers.Contract(
@@ -117,7 +117,7 @@ export async function l3Configuration(
   console.log(`L1 Base Fee estimate on L2 is ${l1BaseFeeEstimate.toNumber()}`)
   const l2Basefee = await L2Provider.getGasPrice()
   const totalGasPrice = await l1BaseFeeEstimate.add(l2Basefee)
-  console.log(`Setting L1 base fee estimate on L3 to ${totalGasPrice}`)
+  console.log(`Setting L1 base fee estimate on L4 to ${totalGasPrice}`)
   const tx4 = await ArbOwner.setL1PricePerUnit(totalGasPrice)
 
   // Wait for the transaction to be mined

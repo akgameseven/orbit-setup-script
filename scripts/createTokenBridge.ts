@@ -22,7 +22,7 @@ import {
 } from '@arbitrum/orbit-sdk'
 import { sanitizePrivateKey } from '@arbitrum/orbit-sdk/utils'
 
-import { L3Config } from './l3ConfigType'
+import { L4Config } from './l4ConfigType'
 
 function createPublicClientFromChainInfo({
   id,
@@ -84,10 +84,10 @@ async function getNativeToken({
  * - do single TX deployment of token bridge
  * - populate network objects with new addresses and return it
  *
- * @param l1Deployer
  * @param l2Deployer
- * @param l1Url
+ * @param l3Deployer
  * @param l2Url
+ * @param l3Url
  * @returns
  */
 export const createNewTokenBridge = async (
@@ -99,8 +99,8 @@ export const createNewTokenBridge = async (
   const l1Provider = new JsonRpcProvider(baseChainRpc)
   const l1NetworkInfo = await l1Provider.getNetwork()
 
-  const l2Provider = new JsonRpcProvider(childChainRpc)
-  const l2NetworkInfo = await l2Provider.getNetwork()
+  const l3Provider = new JsonRpcProvider(childChainRpc)
+  const l3NetworkInfo = await l3Provider.getNetwork()
 
   const deployer = privateKeyToAccount(sanitizePrivateKey(baseChainDeployerKey))
   const rollup = RollupAdminLogic__factory.connect(rollupAddress, l1Provider)
@@ -112,8 +112,8 @@ export const createNewTokenBridge = async (
   })
 
   const orbitChainPublicClient = createPublicClientFromChainInfo({
-    id: l2NetworkInfo.chainId,
-    name: l2NetworkInfo.name,
+    id: l3NetworkInfo.chainId,
+    name: l3NetworkInfo.name,
     rpcUrl: childChainRpc,
   })
 
@@ -265,18 +265,35 @@ export const createNewTokenBridge = async (
     })
   ).getCoreContracts()
 
-  const l1Network: L1Network = {
+  // TODO: fix it
+  //     tokenBridge: TokenBridge;
+  //     ethBridge: EthBridge;
+  //     /**
+  //      * Chain id of the parent chain, i.e. the chain on which this chain settles to.
+  //      */
+  //     partnerChainID: number;
+  //     isArbitrum: true;
+  //     confirmPeriodBlocks: number;
+  //     retryableLifetimeSeconds: number;
+  //     nitroGenesisBlock: number;
+  //     nitroGenesisL1Block: number;
+  //     /**
+  //      * How long to wait (ms) for a deposit to arrive on l2 before timing out a request
+  //      */
+  //     depositTimeout: number
+  const l2Network: L2Network = {
     blockTime: 10,
     chainID: l1NetworkInfo.chainId,
     explorerUrl: '',
     isCustom: true,
     name: l1NetworkInfo.name,
-    partnerChainIDs: [l2NetworkInfo.chainId],
-    isArbitrum: false,
+    partnerChainIDs: [l3NetworkInfo.chainId],
+    // isArbitrum: false,
   }
 
-  const l2Network: L2Network = {
-    chainID: l2NetworkInfo.chainId,
+  // TODO: be careful. It's system class. L2 based
+  const l3Network: L2Network = {
+    chainID: l3NetworkInfo.chainId,
     confirmPeriodBlocks: (await rollup.confirmPeriodBlocks()).toNumber(),
     ethBridge: {
       bridge: coreContracts.bridge,
@@ -317,8 +334,8 @@ export const createNewTokenBridge = async (
   }
 
   return {
-    l1Network,
     l2Network,
+    l3Network,
   }
 }
 
@@ -330,7 +347,7 @@ export const createERC20Bridge = async (
 ) => {
   console.log('Creating token bridge for rollup', rollupAddress)
 
-  const { l1Network, l2Network } = await createNewTokenBridge(
+  const { l2Network, l3Network } = await createNewTokenBridge(
     baseChainRpc,
     baseChainDeployerKey,
     childChainRpc,
@@ -339,7 +356,7 @@ export const createERC20Bridge = async (
   const NETWORK_FILE = 'network.json'
   fs.writeFileSync(
     NETWORK_FILE,
-    JSON.stringify({ l1Network, l2Network }, null, 2)
+    JSON.stringify({ l2Network, l3Network }, null, 2)
   )
   console.log(NETWORK_FILE + ' updated')
 
@@ -348,11 +365,11 @@ export const createERC20Bridge = async (
     './config/orbitSetupScriptConfig.json',
     'utf-8'
   )
-  const config: L3Config = JSON.parse(configRaw)
+  const config: L4Config = JSON.parse(configRaw)
 
   const outputInfo = {
     chainInfo: {
-      minL2BaseFee: config.minL2BaseFee,
+      minL4BaseFee: config.minL3BaseFee,
       networkFeeReceiver: config.networkFeeReceiver,
       infrastructureFeeCollector: config.infrastructureFeeCollector,
       batchPoster: config.batchPoster,
@@ -386,7 +403,7 @@ export const createERC20Bridge = async (
         weth: l2Network.tokenBridge.l1Weth,
         wethGateway: l2Network.tokenBridge.l1WethGateway,
       },
-      l3Contracts: {
+      l4Contracts: {
         customGateway: l2Network.tokenBridge.l2CustomGateway,
         multicall: l2Network.tokenBridge.l2Multicall,
         proxyAdmin: l2Network.tokenBridge.l2ProxyAdmin,
