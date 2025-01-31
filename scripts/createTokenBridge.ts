@@ -22,7 +22,7 @@ import {
 } from '@arbitrum/orbit-sdk'
 import { sanitizePrivateKey } from '@arbitrum/orbit-sdk/utils'
 
-import { L3Config } from './l3ConfigType'
+import { L3Config } from './l4ConfigType'
 
 function createPublicClientFromChainInfo({
   id,

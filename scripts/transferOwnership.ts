@@ -4,7 +4,7 @@ import UpgradeExecutor from '@arbitrum/nitro-contracts/build/contracts/src/mocks
 
 import ArbOwner from '@arbitrum/nitro-contracts/build/contracts/src/precompiles/ArbOwner.sol/ArbOwner.json'
 import fs from 'fs'
-import { L3Config } from './l3ConfigType'
+import { L3Config } from './l4ConfigType'
 import { TOKEN_BRIDGE_CREATOR_Arb_Sepolia } from './createTokenBridge'
 import L1AtomicTokenBridgeCreator from '@arbitrum/token-bridge-contracts/build/contracts/contracts/tokenbridge/ethereum/L1AtomicTokenBridgeCreator.sol/L1AtomicTokenBridgeCreator.json'
 

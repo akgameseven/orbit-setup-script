@@ -1,7 +1,7 @@
 import { abi as ArbOwner__abi } from '@arbitrum/nitro-contracts/build/contracts/src/precompiles/ArbOwner.sol/ArbOwner.json'
 import { abi as ArbGasInfo__abi } from '@arbitrum/nitro-contracts/build/contracts/src/precompiles/ArbGasInfo.sol/ArbGasInfo.json'
 import { ethers } from 'ethers'
-import { L3Config } from './l3ConfigType'
+import { L3Config } from './l4ConfigType'
 import fs from 'fs'
 
 export async function l3Configuration(

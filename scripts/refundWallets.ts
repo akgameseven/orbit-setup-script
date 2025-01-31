@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 import * as fs from 'fs'
-import { L3Config } from './l3ConfigType'
+import { L3Config } from './l4ConfigType'
 
 async function refundWallets(targetAddress: string) {
   const L2_RPC_URL = process.env.L2_RPC_URL

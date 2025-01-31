@@ -1,9 +1,9 @@
 import { ethers } from 'ethers'
-import { L3Config } from './l3ConfigType'
+import { L3Config } from './l4ConfigType'
 import fs from 'fs'
 import { ethOrERC20Deposit } from './nativeTokenDeposit'
 import { createERC20Bridge } from './createTokenBridge'
-import { l3Configuration } from './l3Configuration'
+import { l3Configuration } from './l4Configuration'
 import { defaultRunTimeState, RuntimeState } from './runTimeState'
 import { transferOwner } from './transferOwnership'
 // Delay function
