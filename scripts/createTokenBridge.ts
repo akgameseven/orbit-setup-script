@@ -278,10 +278,10 @@ export const createNewTokenBridge = async (
   //     nitroGenesisBlock: number;
   //     nitroGenesisL1Block: number;
   //     /**
-  //      * How long to wait (ms) for a deposit to arrive on l2 before timing out a request
+  //      * How long to wait (ms) for a deposit to arrive on l3 before timing out a request
   //      */
   //     depositTimeout: number
-  const l2Network: L2Network = {
+  const l3Network: L3Network = {
     blockTime: 10,
     chainID: l1NetworkInfo.chainId,
     explorerUrl: '',
@@ -291,8 +291,8 @@ export const createNewTokenBridge = async (
     // isArbitrum: false,
   }
 
-  // TODO: be careful. It's system class. L2 based
-  const l3Network: L2Network = {
+  // TODO: be careful. It's system class. L3 based
+  const l3Network: L3Network = {
     chainID: l3NetworkInfo.chainId,
     confirmPeriodBlocks: (await rollup.confirmPeriodBlocks()).toNumber(),
     ethBridge: {
@@ -322,19 +322,19 @@ export const createNewTokenBridge = async (
       l1Weth: parentChainContracts.weth,
       l1WethGateway: parentChainContracts.wethGateway,
 
-      l2CustomGateway: orbitChainContracts.customGateway,
-      l2ERC20Gateway: orbitChainContracts.standardGateway,
-      l2GatewayRouter: orbitChainContracts.router,
-      l2Multicall: orbitChainContracts.multicall,
-      l2ProxyAdmin: orbitChainContracts.proxyAdmin,
-      l2Weth: orbitChainContracts.weth,
-      l2WethGateway: orbitChainContracts.wethGateway,
+      l3CustomGateway: orbitChainContracts.customGateway,
+      l3ERC20Gateway: orbitChainContracts.standardGateway,
+      l3GatewayRouter: orbitChainContracts.router,
+      l3Multicall: orbitChainContracts.multicall,
+      l3ProxyAdmin: orbitChainContracts.proxyAdmin,
+      l3Weth: orbitChainContracts.weth,
+      l3WethGateway: orbitChainContracts.wethGateway,
     },
     blockTime: arbitrumSdkConstants.ARB_MINIMUM_BLOCK_TIME_IN_SECONDS,
   }
 
   return {
-    l2Network,
+    l3Network,
     l3Network,
   }
 }
@@ -347,7 +347,7 @@ export const createERC20Bridge = async (
 ) => {
   console.log('Creating token bridge for rollup', rollupAddress)
 
-  const { l2Network, l3Network } = await createNewTokenBridge(
+  const { l3Network, l4Network } = await createNewTokenBridge(
     baseChainRpc,
     baseChainDeployerKey,
     childChainRpc,
@@ -356,7 +356,7 @@ export const createERC20Bridge = async (
   const NETWORK_FILE = 'network.json'
   fs.writeFileSync(
     NETWORK_FILE,
-    JSON.stringify({ l2Network, l3Network }, null, 2)
+    JSON.stringify({ l3Network, l4Network }, null, 2)
   )
   console.log(NETWORK_FILE + ' updated')
 
@@ -394,23 +394,23 @@ export const createERC20Bridge = async (
     },
 
     tokenBridgeContracts: {
-      l2Contracts: {
-        customGateway: l2Network.tokenBridge.l1CustomGateway,
-        multicall: l2Network.tokenBridge.l1MultiCall,
-        proxyAdmin: l2Network.tokenBridge.l1ProxyAdmin,
-        router: l2Network.tokenBridge.l1GatewayRouter,
-        standardGateway: l2Network.tokenBridge.l1ERC20Gateway,
-        weth: l2Network.tokenBridge.l1Weth,
-        wethGateway: l2Network.tokenBridge.l1WethGateway,
+      l3Contracts: {
+        customGateway: l3Network.tokenBridge.l1CustomGateway,
+        multicall: l3Network.tokenBridge.l1MultiCall,
+        proxyAdmin: l3Network.tokenBridge.l1ProxyAdmin,
+        router: l3Network.tokenBridge.l1GatewayRouter,
+        standardGateway: l3Network.tokenBridge.l1ERC20Gateway,
+        weth: l3Network.tokenBridge.l1Weth,
+        wethGateway: l3Network.tokenBridge.l1WethGateway,
       },
       l4Contracts: {
-        customGateway: l2Network.tokenBridge.l2CustomGateway,
-        multicall: l2Network.tokenBridge.l2Multicall,
-        proxyAdmin: l2Network.tokenBridge.l2ProxyAdmin,
-        router: l2Network.tokenBridge.l2GatewayRouter,
-        standardGateway: l2Network.tokenBridge.l2ERC20Gateway,
-        weth: l2Network.tokenBridge.l2Weth,
-        wethGateway: l2Network.tokenBridge.l2WethGateway,
+        customGateway: l3Network.tokenBridge.l3CustomGateway,
+        multicall: l3Network.tokenBridge.l3Multicall,
+        proxyAdmin: l3Network.tokenBridge.l3ProxyAdmin,
+        router: l3Network.tokenBridge.l3GatewayRouter,
+        standardGateway: l3Network.tokenBridge.l3ERC20Gateway,
+        weth: l3Network.tokenBridge.l3Weth,
+        wethGateway: l3Network.tokenBridge.l3WethGateway,
       },
     },
   }
