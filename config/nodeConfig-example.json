@@ -1,0 +1,65 @@
+{
+  "chain": {
+    "info-json": "[{\"chain-id\":CHAIN_ID_HERE,\"parent-chain-id\":PARENT_CHAIN_ID_HERE,\"parent-chain-is-arbitrum\":boolean,\"chain-name\":\"CHAIN_TEST_NAME\",\"chain-config\":{\"homesteadBlock\":0,\"daoForkBlock\":null,\"daoForkSupport\":boolean,\"eip150Block\":0,\"eip150Hash\":\"0x0000000000000000000000000000000000000000000000000000000000000000\",\"eip155Block\":0,\"eip158Block\":0,\"byzantiumBlock\":0,\"constantinopleBlock\":0,\"petersburgBlock\":0,\"istanbulBlock\":0,\"muirGlacierBlock\":0,\"berlinBlock\":0,\"londonBlock\":0,\"clique\":{\"period\":0,\"epoch\":0},\"arbitrum\":{\"EnableArbOS\":boolean,\"AllowDebugPrecompiles\":boolean,\"DataAvailabilityCommittee\":boolean,\"InitialArbOSVersion\":32,\"GenesisBlockNum\":0,\"MaxCodeSize\":24576,\"MaxInitCodeSize\":49152,\"InitialChainOwner\":\"OxOWNER_ADDRESS\"},\"chainId\":CHAIN_ID},\"rollup\":{\"bridge\":\"BRIDGE_ADDRESS\",\"inbox\":\"INBOX_ADDRESS\",\"sequencer-inbox\":\"SEQUENCER_ADDRESS\",\"rollup\":\"ROLLUP_ADDRESS\",\"validator-utils\":\"VALIDATOR_UTIL_ADDRES\",\"validator-wallet-creator\":\"validator_wallet_creator\",\"deployed-at\":DEPLOYER_AT_INSTANT}}]",
+    "name": "CHAIN_NAME"
+  },
+  "parent-chain": {
+    "connection": {
+      "url": "URL"
+    }
+  },
+  "http": {
+    "addr": "",
+    "port": 0,
+    "vhosts": [
+      "*"
+    ],
+    "corsdomain": [
+      "*"
+    ],
+    "api": [
+      "eth",
+      "net",
+      "web3",
+      "arb",
+      "debug"
+    ]
+  },
+  "node": {
+    "sequencer": boolean,
+    "delayed-sequencer": {
+      "enable": boolean,
+      "use-merge-finality": boolean,
+      "finalize-distance": 0
+    },
+    "batch-poster": {
+      "max-size": 0,
+      "enable": boolean,
+      "parent-chain-wallet": {
+        "private-key": "PRIVATE_KEY
+      }
+    },
+    "staker": {
+      "enable": boolean,
+      "strategy": "STRATEGY",
+      "parent-chain-wallet": {
+        "private-key": "PRIVATE_KEY"
+      }
+    },
+    "dangerous": {
+      "no-sequencer-coordinator": boolean,
+      "disable-blob-reader": boolean
+    }
+  },
+  "execution": {
+    "forwarding-target": "",
+    "sequencer": {
+      "enable": boolean,
+      "max-tx-data-size": 0,
+      "max-block-speed": "NUMBER+ms"
+    },
+    "caching": {
+      "archive": boolean
+    }
+  }
+}
